@@ -1,0 +1,20 @@
+# devTools/ is NOT ignored: tools cloned there via getClone.m are detached (.git
+# stripped) and meant to be tracked by THIS repo, for deliberate local tool
+# development. Empty/absent until a tool is explicitly detached this way; the
+# read-only shared clones doIt.m normally runs against live outside this repo,
+# under tools/<tool> (see gitClone.m).
+
+# Large intermediary data / doIt.m caches -- regenerated, not version-controlled
+*.mat
+
+# Exported figures (regenerable via doIt)
+figures/
+
+# doIt.m run logs
+run.log
+
+# bgIsolation worktrees (EnterWorktree scaffold, not repo content)
+.claude/worktrees/
+
+# macOS cruft
+.DS_Store

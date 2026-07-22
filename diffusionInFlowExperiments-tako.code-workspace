@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "tools/util",
+			"path": "../../tools/util"
+		}
+	],
+	"settings": {
+		"git.autoRepositoryDetection": "subFolders"
+	}
+}
