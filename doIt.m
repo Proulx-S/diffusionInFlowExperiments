@@ -148,7 +148,7 @@ errorbar(vencCat, sigTissueNoFlow2_av, sigTissueNoFlow2_er);
 grid(ax{end},'on')
 xlabel(ax{end},'venc');
 ylabel(ax{end},'cross-voxel mean of |complex signal|/|complex signal at venc=inf|');
-legend(ax{end},'lumen','tissue');
+legend(ax{end},'lumen ±95%CI','tissue ±95%CI');
 title(ax{end},'dataNoFlow');
 
 
