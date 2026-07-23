@@ -1,4 +1,4 @@
-function [data, dataVenc, dataRun, dataMeas, dataNoFlow, dataNoFlowMeas, PEspacing, FEspacing] = loadPhantom03(dataPath)
+function [data, dataVenc, dataRun, dataMeas, dataNoFlow, dataNoFlowVenc, dataNoFlowMeas, PEspacing, FEspacing] = loadPhantom03(dataPath)
 % Load the 20251010_multiVENCphantom03 inflow phantom, cropped to include a bit of
 % static agar around the tube. Copied+adapted from multiVencISMRM2026/loadPhantom03.m
 % (same phantom, same raw .mat layout) so this project doesn't depend on that one.
@@ -9,6 +9,14 @@ function [data, dataVenc, dataRun, dataMeas, dataNoFlow, dataNoFlowMeas, PEspaci
 % Returns per-voxel complex data (data/dataNoFlow) plus per-frame venc/run/meas
 % index arrays (same size along the 3rd/measurement dimension), and the FE/PE
 % in-plane pixel spacing (mm).
+%
+% dataNoFlowVenc is tracked and sorted independently of data/dataVenc (added -- the
+% original multiVencISMRM2026 version computed a dataNoFlowVenc{iRun} per-run but never
+% concatenated/returned it, then reordered dataNoFlow using `b`, the sort permutation
+% derived from dataVenc's own order. That's only valid if every run's still-phase count
+% exactly matches its infuse-phase count, which holds for this dataset -- verified: both
+% end up length 78 -- but isn't guaranteed by construction, so dataNoFlow now gets its
+% own tracked+sorted venc instead of silently borrowing data's permutation).
 
 FEspacing = 0.5;      % mm per pixel in FE direction
 PEspacing = 0.8929;   % mm per pixel in PE direction
@@ -49,6 +57,7 @@ for iRun = 1:length(runList)
     end
     stillIdx{iRun}(stillIdx{iRun}>size(img,11)) = [];
     dataNoFlow{iRun}     = img(  :,:,:,:,:,:,:,:,:,:,stillIdx{iRun},:,:,:,:,:);
+    dataNoFlowVenc{iRun} = repmat(venc                                                                       ,[1 1 1 1 1 1 1            1 1 1 length(stillIdx{iRun}) 1 1 1 1]);
     dataNoFlowMeas{iRun} = repmat(permute(1:length(stillIdx{iRun}),[1 3 4 5 6 7 8 9 10 11 2 12 13 14 15 16]),[1 1 1 1 1 1 size(venc,7) 1 1 1 1                      1 1 1 1]);
 
     % ECC using no-flow data points (row-wise: less noisy, leverages the directional
@@ -63,12 +72,14 @@ dataVenc   = cat(11,dataVenc{:});
 dataRun    = cat(11,dataRun{:} );
 dataMeas   = cat(11,dataMeas{:} );
 dataNoFlow     = cat(11,dataNoFlow{:}    );
+dataNoFlowVenc = cat(11,dataNoFlowVenc{:});
 dataNoFlowMeas = cat(11,dataNoFlowMeas{:}    );
 
 data       = data(:,:,:);
 dataVenc   = dataVenc(:,:,:);
 dataRun    = dataRun(:,:,:);
 dataNoFlow     = dataNoFlow(:,:,:);
+dataNoFlowVenc = dataNoFlowVenc(:,:,:);
 dataNoFlowMeas = dataNoFlowMeas(:,:,:);
 
 [~,b] = sort(dataVenc,'descend');
@@ -76,5 +87,9 @@ data       = data(:,:,b);
 dataVenc   = dataVenc(:,:,b);
 dataRun    = dataRun(:,:,b);
 dataMeas   = dataMeas(:,:,b);
-dataNoFlow     = dataNoFlow(:,:,b);
-dataNoFlowMeas = dataNoFlowMeas(:,:,b);
+
+% dataNoFlow sorted by its OWN venc order -- see header note; not the same permutation as data's `b`.
+[~,bNoFlow] = sort(dataNoFlowVenc,'descend');
+dataNoFlow     = dataNoFlow(:,:,bNoFlow);
+dataNoFlowVenc = dataNoFlowVenc(:,:,bNoFlow);
+dataNoFlowMeas = dataNoFlowMeas(:,:,bNoFlow);
