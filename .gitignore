@@ -8,7 +8,7 @@
 *.mat
 
 # Exported figures (regenerable via doIt)
-figures/
+# figures/
 
 # doIt.m run logs
 run.log
