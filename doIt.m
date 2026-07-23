@@ -48,7 +48,24 @@ phantomName = '20251010_multiVENCphantom03';
     loadPhantom03(fullfile(dataDir, phantomName));
 %% %%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%
+%% Draw phantom masks
+%%%%%%%%%%%%%%%%%%%%%
+% OD/ID = outer/inner tube diameter boundary -- same naming as multiVencISMRM2026/
+% doIt_inflow.m's own ID=6.35mm/OD=11.11mm constants for this same phantom. Cached to
+% drawMaskCache/ (git-tracked, see .gitignore) -- drawn once, reused on every later run.
+imMag = abs(mean(data,3));
+masks = drawMask(imMag, {'OD','ID'});
+%% %%%%%%%%%%%%%%%%%%%
+
     saveCache(1)
 else
     loadCache(1)
 end
+
+
+
+
+
+figure
+imagesc(abs(mean(data,3))); axis image; colormap gray; colorbar

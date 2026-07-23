@@ -16,5 +16,15 @@ run.log
 # bgIsolation worktrees (EnterWorktree scaffold, not repo content)
 .claude/worktrees/
 
+# Scratch render dirs and pasted screenshots
+tmp_*/
+Screenshot*.png
+
 # macOS cruft
 .DS_Store
+
+# drawMask.m's manual-ROI cache is the ONE exception to the *.mat rule above -- a
+# hand-drawn mask is irreplaceable human effort/judgment, not regenerable, so it MUST be
+# version-controlled (see drawMask.m's own CACHING note; mirrors vfMRItools/drawVessel.m's
+# drawVesselCache).
+!drawMaskCache/*.mat
