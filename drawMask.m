@@ -44,6 +44,12 @@ if ~isfield(opts,'force') || isempty(opts.force);       opts.force   = false;   
 if ischar(labels) || isstring(labels); labels = {char(labels)}; end
 if ~exist(opts.cacheDir,'dir'); mkdir(opts.cacheDir); end
 
+% roipoly displays a double image via imshow, which assumes values already live in
+% [0,1] -- a raw magnitude image (e.g. ~1e-7 for this phantom) renders as all-black.
+% Rescale for display only; pixel geometry (and so the mask/xi/yi) is unaffected.
+imDisp = double(im) - min(double(im(:)));
+if max(imDisp(:))>0; imDisp = imDisp / max(imDisp(:)); end
+
 masks = struct();
 for k = 1:numel(labels)
     label = labels{k};
@@ -66,9 +72,9 @@ for k = 1:numel(labels)
 
     fprintf('drawMask: draw ''%s'' -- click vertices, double-click (or Enter) to close\n', label);
     if isempty(xi)
-        [mask, xi, yi] = roipoly(im);
+        [mask, xi, yi] = roipoly(imDisp);
     else
-        [mask, xi, yi] = roipoly(im, xi, yi);
+        [mask, xi, yi] = roipoly(imDisp, xi, yi);
     end
     close(gcf);
 
