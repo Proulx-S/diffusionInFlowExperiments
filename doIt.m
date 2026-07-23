@@ -123,8 +123,8 @@ vencCat = categorical(compose('%g',vencList), compose('%g',vencList), 'Ordinal',
 figFld = fullfile(workDir,'figures'); if ~exist(figFld,'dir'); mkdir(figFld); end
 
 figure; hT = tiledlayout(1,3); hT.TileSpacing = 'compact'; hT.Padding = 'compact'; ax = {};
-ax{end+1} = nexttile(hT); plot(vencCat, sigLumenData1, '-o', vencCat, sigTissueData1, '-s');
-ax{end+1} = nexttile(hT); plot(vencCat, sigLumenNoFlow1, '-o', vencCat, sigTissueNoFlow1, '-s');
+ax{end+1} = nexttile(hT); plot(vencCat, sigLumenData1, '.-', vencCat, sigTissueData1, '.-');
+ax{end+1} = nexttile(hT); plot(vencCat, sigLumenNoFlow1, '.-', vencCat, sigTissueNoFlow1, '.-');
 yLim = get([ax{:}],'YLim'); yLim = [yLim{:}]; yLim = [min(yLim), max(yLim)]; set([ax{:}],'YLim',yLim);
 xlabel([ax{:}],'venc'); ylabel([ax{:}],'|mean complex signal|'); legend('lumen','tissue'); title('data'); grid([ax{:}],'on')
 title(ax{1},'data'); title(ax{2},'dataNoFlow');
@@ -146,6 +146,12 @@ ax{end+1} = nexttile(hT);
 errorbar(vencCat, sigLumenNoFlow2_av, sigLumenNoFlow2_er); hold on
 errorbar(vencCat, sigTissueNoFlow2_av, sigTissueNoFlow2_er);
 grid(ax{end},'on')
+xlabel(ax{end},'venc');
+ylabel(ax{end},'cross-voxel mean of |complex signal|/|complex signal at venc=inf|');
+legend(ax{end},'lumen','tissue');
+title(ax{end},'dataNoFlow');
+
+
 
 print(gcf, fullfile(figFld,'lumenTissueVsVenctaNoFlow.png'), '-dpng');
 
